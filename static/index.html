@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<title>Température</title>
+	<style>
+		body {
+			font-family: "Segoe UI";
+			text-align: center;
+		}
+		.temperature {
+			font-size: 40px;
+		}
+		#temperatureValue {
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+	<h1>Température</h1>
+	<div class="temperature">
+		<span id="temperatureLoggedAt"></span>: 
+		<span id="temperatureValue"></span> °C
+	</div>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="http://momentjs.com/downloads/moment-with-locales.min.js"></script>
+	<script>
+		moment.locale("fr");
+		function updateTemperature () {
+			$.get("temp?r=1", function (data) {
+				const loggedAt = moment.unix(data[0].logged_at).calendar();
+				const value = parseInt(data[0].value) / 1000;
+				$("#temperatureLoggedAt").html(loggedAt);
+				$("#temperatureValue").html(value);
+			});
+		}
+		updateTemperature();
+		setInterval(updateTemperature, 60000);
+	</script>
+</body>
+</html>

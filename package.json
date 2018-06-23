@@ -1,0 +1,15 @@
+{
+  "name": "temperature",
+  "version": "1.0.0",
+  "description": "DS18B20 temperature sensor logger",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Antoine",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2",
+    "sqlite3": "^3.1.13"
+  }
+}
