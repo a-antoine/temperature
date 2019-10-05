@@ -6,6 +6,12 @@ const app = express();
 
 app.use('/', express.static('static'));
 
+app.use(function(req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+	next();
+});
+
 function logTemperature () {
 	exec('cat /sys/bus/w1/devices/28-011550329fff/w1_slave | grep "t=" | awk -F "t=" \'{print $2/1000}\'', (error, stdout, stderr) => {
 		if (error) {
@@ -44,7 +50,7 @@ app.get('/temp', (req, res) => {
 	if (req.query.r) {
 		const rowsCountInt = parseInt(req.query.r);
 		if (!isNaN(rowsCountInt)) {
-			if (rowsCountInt >= 1 && rowsCountInt <= 10000) {
+			if (rowsCountInt >= 1 && rowsCountInt <= 10080) {
 				rowsCount = parseInt(req.query.r);
 			} else {
 				res.status(400).send("Parameter 'r' must be between 1 and 10000");

@@ -14,6 +14,11 @@
 		#temperatureValue {
 			font-weight: bold;
 		}
+		#container {
+			width:100%;
+			height:400px;
+			margin-top: 50px;
+		}
 	</style>
 </head>
 <body>
@@ -22,12 +27,14 @@
 		<span id="temperatureLoggedAt"></span>: 
 		<span id="temperatureValue"></span> °C
 	</div>
+	<div id="container"></div>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<script src="http://momentjs.com/downloads/moment-with-locales.min.js"></script>
+	<script src="https://code.highcharts.com/highcharts.src.js"></script>
 	<script>
 		moment.locale("fr");
 		function updateTemperature () {
-			$.get("temp?r=1", function (data) {
+			$.get(window.location.origin + "/temp?r=1", function (data) {
 				const loggedAt = moment.unix(data[0].logged_at).calendar();
 				const value = parseInt(data[0].value) / 1000;
 				$("#temperatureLoggedAt").html(loggedAt);
@@ -36,6 +43,74 @@
 		}
 		updateTemperature();
 		setInterval(updateTemperature, 60000);
+
+		$.get(window.location.origin + "/temp?r=1440", function (data) {
+
+			for (let i = 0; i < data.length; i++) {
+				data[i] = [data[i].logged_at * 1000, data[i].value / 1000];
+			}
+
+			Highcharts.setOptions({
+				time: {
+					useUTC: false
+				}
+			});
+
+			Highcharts.chart("container", {
+				chart: {
+					zoomType: "x"
+				},
+				title: {
+					text: ""
+				},
+				subtitle: {
+					text: ""
+				},
+				xAxis: {
+					type: "datetime"
+				},
+				yAxis: {
+					title: {
+						text: "Temperature"
+					}
+				},
+				legend: {
+					enabled: false
+				},
+				plotOptions: {
+					area: {
+						fillColor: {
+							linearGradient: {
+								x1: 0,
+								y1: 0,
+								x2: 0,
+								y2: 1
+							},
+							stops: [
+								[0, Highcharts.getOptions().colors[0]],
+								[1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get("rgba")]
+							]
+						},
+						marker: {
+							radius: 2
+						},
+						lineWidth: 1,
+						states: {
+							hover: {
+								lineWidth: 1
+							}
+						},
+						threshold: null
+					}
+				},
+
+				series: [{
+					type: "area",
+					name: "Température",
+					data: data
+				}]
+			});
+		});
 	</script>
 </body>
 </html>
